@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<title>TMDB Application</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="style.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="jquery.twbsPagination.min.js"></script>
+
+
+<body>
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <ul class="nav navbar-nav">
+        <li><a href="movies.html">Movies</a></li>
+	  <li class="dropdown" onclick="location.href='genres.html'">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Genre
+        <span class="caret"></span></a>
+      </li>
+	  <li><a href="actors.html">Actors</a></li>
+        <li><a href="tvshows.html">TV Shows</a></li>
+    </ul>
+    <div class="navbar-form navbar-left">
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Search actor" id="searchInput">
+      </div>
+      <button id="submit" class="btn btn-default">Submit</button>
+    </div>
+  </div>
+</nav>
+
+<div id="message"></div>
+<ul id="pagination"></ul>
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h4 class="modal-title" id="modalTitleH4"></h4>
+            </div>
+            <div class="modal-body" id="modalBodyDiv">
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+$(document).ready(function () {
+            CallAPI(1);
+  
+    function CallAPI(page) {
+        $.ajax({
+            url: "https://api.themoviedb.org/3/person/popular?language=en-US" + "&page=" + page,
+            data: { "api_key": "65771d19b4a665e86c2dd45d55b5d10e" },
+            dataType: "json",
+            success: function (result, status, xhr) {
+                var resultHtml = $("<div class=\"resultDiv\">");
+                for (i = 0; i < result["results"].length; i++) {
+					
+					if (!!result["results"][i]["profile_path"]) {
+					 var image = "https://image.tmdb.org/t/p/w300/" + result["results"][i]["profile_path"];
+					 resultHtml.append("<div class=\"result\" resourceId=\"" + result["results"][i]["id"] + "\">" + "<img src=\"" + image + "\" />" + "<div class=\"name\"><a>" + result["results"][i]["name"] + "</a></div></div>")
+					}
+  
+                    
+  
+                    
+                }
+  
+                resultHtml.append("</div>");
+                $("#message").html(resultHtml);
+  
+                //Paging(result["total_pages"]);
+            },
+            error: function (xhr, status, error) {
+                $("#message").html("Result: " + status + " " + error + " " + xhr.status + " " + xhr.statusText)
+            }
+        });
+    }
+  
+    function Validate() {
+        var errorMessage = "";
+        if ($("#searchInput").val() == "") {
+            errorMessage += "► Enter Search Text";
+        }
+        return errorMessage;
+    }
+  
+    function Paging(totalPage) {
+        var obj = $("#pagination").twbsPagination({
+            totalPages: totalPage,
+            visiblePages: 5,
+            onPageClick: function (event, page) {
+                CallAPI(page);
+            }
+        });
+    }
+  
+    $(document).ajaxStart(function () {
+        $(".imageDiv img").show();
+    });
+  
+    $(document).ajaxStop(function () {
+        $(".imageDiv img").hide();
+    });
+});
+
+
+
+$(document).ready(function () {
+    $("#submit").click(function (e) {
+        var validate = Validate();
+        $("#message").html(validate);
+        if (validate.length == 0) {
+            CallAPI(1);
+        }
+    });
+  
+    function CallAPI(page) {
+        $.ajax({
+            url: "https://api.themoviedb.org/3/search/person?language=en-US&query=" + $("#searchInput").val() + "&page=" + page + "&include_adult=false",
+            data: { "api_key": "65771d19b4a665e86c2dd45d55b5d10e" },
+            dataType: "json",
+            success: function (result, status, xhr) {
+                var resultHtml = $("<div class=\"resultDiv\">");
+                for (i = 0; i < result["results"].length; i++) {
+					
+					if (!!result["results"][i]["profile_path"]) {
+					 var image = "https://image.tmdb.org/t/p/w300/" + result["results"][i]["profile_path"];
+					 resultHtml.append("<div class=\"result\" resourceId=\"" + result["results"][i]["id"] + "\">" + "<img src=\"" + image + "\" />" + "<div class=\"name\"><a>" + result["results"][i]["name"] + "</a></div></div>")
+					}
+  
+                    
+  
+                    
+                }
+  
+                resultHtml.append("</div>");
+                $("#message").html(resultHtml);
+  
+                //Paging(result["total_pages"]);
+            },
+            error: function (xhr, status, error) {
+                $("#message").html("Result: " + status + " " + error + " " + xhr.status + " " + xhr.statusText)
+            }
+        });
+    }
+  
+    function Validate() {
+        var errorMessage = "";
+        if ($("#searchInput").val() == "") {
+            errorMessage += "► Enter Search Text";
+        }
+        return errorMessage;
+    }
+  
+    function Paging(totalPage) {
+        var obj = $("#pagination").twbsPagination({
+            totalPages: totalPage,
+            visiblePages: 5,
+            onPageClick: function (event, page) {
+                CallAPI(page);
+            }
+        });
+    }
+  
+    $(document).ajaxStart(function () {
+        $(".imageDiv img").show();
+    });
+  
+    $(document).ajaxStop(function () {
+        $(".imageDiv img").hide();
+    });
+});
+
+$("#message").on("click", ".result", function () {
+    var resourceId = $(this).attr("resourceId");
+    $.ajax({
+        url: "https://api.themoviedb.org/3/person/" + resourceId + "?language=en-US",
+        data: {
+            api_key: "65771d19b4a665e86c2dd45d55b5d10e"
+        },
+        dataType: 'json',
+        success: function (result, status, xhr) {
+            $("#modalTitleH4").html(result["name"]);
+  
+            var image = result["profile_path"] == null ? "Image/no-image.png" : "https://image.tmdb.org/t/p/w300/" + result["profile_path"];
+            var biography = result["biography"] == null ? "No information available" : result["biography"];
+  
+            var resultHtml = "<p class=\"text-center\"><img src=\"" + image + "\"/></p><p>" + biography + "</p>";
+  
+            $("#modalBodyDiv").html(resultHtml);
+			$("#modalBodyDiv").css("color","#fff");
+			$("#modalBodyDiv").css("background-color","#000");
+			$("#modalBodyDiv").css("opacity","0.8");
+  
+            $("#myModal").modal("show");
+        },
+        error: function (xhr, status, error) {
+            $("#message").html("Result: " + status + " " + error + " " + xhr.status + " " + xhr.statusText)
+        }
+    });
+});
+</script>
+
+</body>
+</html> 

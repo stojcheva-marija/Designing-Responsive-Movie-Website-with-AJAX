@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<title>TMDB Application</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="circle.css">
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<script src="jquery.twbsPagination.min.js"></script>
+
+<body>
+
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+
+    <ul class="nav navbar-nav">
+        <li><a href="movies.html">Movies</a></li>
+	  <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Genre
+        <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+			<li><a href="#" id="action">Action</a></li>
+			<li><a href="#" id="adventure">Adventure</a></li>
+			<li><a href="#" id="animation">Animation</a></li>
+			<li><a href="#" id="comedy">Comedy</a></li>
+			<li><a href="#" id="crime">Crime</a></li>
+			<li><a href="#" id="documentary">Documentary</a></li>
+			<li><a href="#" id="drama">Drama</a></li>
+			<li><a href="#" id="family">Family</a></li>
+			<li><a href="#" id="fantasy">Fantasy</a></li>
+			<li><a href="#" id="history">History</a></li>
+			<li><a href="#" id="horror">Horror</a></li>
+			<li><a href="#" id="music">Music</a></li>
+			<li><a href="#" id="mystery">Mystery</a></li>
+			<li><a href="#" id="romance">Romance</a></li>
+			<li><a href="#" id="science_fiction">Science Fiction</a></li>
+			<li><a href="#" id="tv_movie">TV Movie</a></li>
+			<li><a href="#" id="thriller">Thriller</a></li>
+			<li><a href="#" id="war">War</a></li>
+			<li><a href="#" id="western">Western</a></li>
+        </ul>
+      </li>
+	  <li><a href="actors.html">Actors</a></li>
+        <li><a href="tvshows.html">TV Shows</a></li>
+    </ul>
+    <div class="navbar-form navbar-left" id="form">
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Search movie" id="searchInput">
+      </div>
+      <button id="submit" class="btn btn-default">Submit</button>
+    </div>
+  </div>
+</nav>
+
+<div id="message"></div>
+<ul id="pagination"></ul>
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">×</button>
+                <h4 class="modal-title" id="modalTitleH4"></h4>
+            </div>
+            <div class="modal-body" id="modalBodyDiv">
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+$( document ).ready(function() {
+            CallAPI(1);
+        //}
+		
+		function CallAPI(page) {
+        $.ajax({
+            url: "https://api.themoviedb.org/3/movie/popular?language=en-US" + "&page=" + page + "&include_adult=false",
+            data: { "api_key": "65771d19b4a665e86c2dd45d55b5d10e" },
+            dataType: "json",
+            success: function (result, status, xhr) {
+                var resultHtml = $("<div class=\"resultDiv\">");
+                for (i = 0; i < result["results"].length; i++) {
+					
+					if (!!result["results"][i]["poster_path"]) {
+					 var image = "https://image.tmdb.org/t/p/w300/" + result["results"][i]["poster_path"];
+					 resultHtml.append("<div class=\"result\" resourceId=\"" + result["results"][i]["id"] + "\">" + "<img src=\"" + image + "\" /></div>");// + "<div class=\"name\"><a>" + result["results"][i]["name"] + "</a></div></div>")
+					}
+  
+                    
+                }
+  
+                resultHtml.append("</div>");
+                $("#message").html(resultHtml);
+  
+                //Paging(result["total_pages"]);
+            },
+            error: function (xhr, status, error) {
+                $("#message").html("Result: " + status + " " + error + " " + xhr.status + " " + xhr.statusText)
+            }
+        });
+    }
+  
+    function Validate() {
+        var errorMessage = "";
+        if ($("#searchInput").val() == "") {
+            errorMessage += "► Enter Search Text";
+        }
+        return errorMessage;
+    }
+  
+    function Paging(totalPage) {
+        var obj = $("#pagination").twbsPagination({
+            totalPages: totalPage,
+            visiblePages: 5,
+            onPageClick: function (event, page) {
+                CallAPI(page);
+            }
+        });
+    }
+  
+    $(document).ajaxStart(function () {
+        $(".imageDiv img").show();
+    });
+  
+    $(document).ajaxStop(function () {
+        $(".imageDiv img").hide();
+    });
+});
+
+$(document).ready(function () {
+    $("#action").click(function (e) {
+		
+        var validate = Validate(28);
+        $("#message").html(validate);
+        if (validate.length == 0) {
+            CallGenreAPI(1,28);
+        }
+    });
+	$("#adventure").click(function (e) {
+		
+        var validate = Validate(12);
+        $("#message").html(validate);
+        if (validate.length == 0) {
+            CallGenreAPI(1,12);
+        }
+    });
+	$("#animation").click(function (e) {
+		
+        var validate = Validate(16);
+        $("#message").html(validate);
+        if (validate.length == 0) {
+            CallGenreAPI(1,16);
+        }
+    });
+	$("#comedy").click(function (e) {
+		
+        var validate = Validate(35);
+        $("#message").html(validate);
+        if (validate.length == 0) {
+            CallGenreAPI(1,35);
+        }
+    });
+	$("#crime").click(function (e) {
+		
+        var validate = Validate(80);
+        $("#message").html(validate);
+        if (validate.length == 0) {
+            CallGenreAPI(1,80);
+        }
+    });
+	$("#documentary").click(function (e) {
+		
+        var validate = Validate(99);
+        $("#message").html(validate);
+        if (validate.length == 0) {
+            CallGenreAPI(1,99);
+        }
+    });
+	$("#drama").click(function (e) {
+		
+        var validate = Validate(18);
+        $("#message").html(validate);
+        if (validate.length == 0) {
+            CallGenreAPI(1,18);
+        }
+    });
+	$("#family").click(function (e) {
+		
+        var validate = Validate(10751);
+        $("#message").html(validate);
+        if (validate.length == 0) {
+            CallGenreAPI(1,10751);
+        }
+    });
+	$("#fantasy").click(function (e) {
+		
+        var validate = Validate(14);
+        $("#message").html(validate);
+        if (validate.length == 0) {
+            CallGenreAPI(1,14);
+        }
+    });
+	$("#history").click(function (e) {
+		
+        var validate = Validate(36);
+        $("#message").html(validate);
+        if (validate.length == 0) {
+            CallGenreAPI(1,36);
+        }
+    });
+	$("#horror").click(function (e) {
+		
+        var validate = Validate(27);
+        $("#message").html(validate);
+        if (validate.length == 0) {
+            CallGenreAPI(1,27);
+        }
+    });
+	$("#music").click(function (e) {
+		
+        var validate = Validate(10402);
+        $("#message").html(validate);
+        if (validate.length == 0) {
+            CallGenreAPI(1,10402);
+        }
+    });
+	$("#mystery").click(function (e) {
+		
+        var validate = Validate(9648);
+        $("#message").html(validate);
+        if (validate.length == 0) {
+            CallGenreAPI(1,9648);
+        }
+    });
+	$("#romance").click(function (e) {
+		
+        var validate = Validate(10749);
+        $("#message").html(validate);
+        if (validate.length == 0) {
+            CallGenreAPI(1,10749);
+        }
+    });
+	$("#science_fiction").click(function (e) {
+		
+        var validate = Validate(878);
+        $("#message").html(validate);
+        if (validate.length == 0) {
+            CallGenreAPI(1,878);
+        }
+    });
+	$("#tv_movie").click(function (e) {
+		
+        var validate = Validate(10770);
+        $("#message").html(validate);
+        if (validate.length == 0) {
+            CallGenreAPI(1,10770);
+        }
+    });
+	$("#thriller").click(function (e) {
+		
+        var validate = Validate(53);
+        $("#message").html(validate);
+        if (validate.length == 0) {
+            CallGenreAPI(1,53);
+        }
+    });
+	$("#war").click(function (e) {
+		
+        var validate = Validate(10752);
+        $("#message").html(validate);
+        if (validate.length == 0) {
+            CallGenreAPI(1,10752);
+        }
+    });
+	$("#western").click(function (e) {
+		
+        var validate = Validate(37);
+        $("#message").html(validate);
+        if (validate.length == 0) {
+            CallGenreAPI(1,37);
+        }
+    });
+
+
+
+
+
+
+
+
+function CallGenreAPI(page, id) {
+        $.ajax({
+            url: "http://api.themoviedb.org/3/discover/movie?&with_genres=" +id + "&page=" + page + "&include_adult=false",
+            data: { "api_key": "65771d19b4a665e86c2dd45d55b5d10e" },
+            dataType: "json",
+            success: function (result, status, xhr) {
+                var resultHtml = $("<div class=\"resultDiv\">");
+                for (i = 0; i < result["results"].length; i++) {
+					
+					if (!!result["results"][i]["poster_path"]) {
+					 var image = "https://image.tmdb.org/t/p/w300/" + result["results"][i]["poster_path"];
+					 resultHtml.append("<div class=\"result\" resourceId=\"" + result["results"][i]["id"] + "\">" + "<img src=\"" + image + "\" /></div>");// + "<div class=\"name\"><a>" + result["results"][i]["name"] + "</a></div></div>")
+					}
+  
+                    
+                }
+  
+                resultHtml.append("</div>");
+                $("#message").html(resultHtml);
+  
+                //Paging(result["total_pages"]);
+            },
+            error: function (xhr, status, error) {
+                $("#message").html("Result: " + status + " " + error + " " + xhr.status + " " + xhr.statusText)
+            }
+        });
+    }
+	function Validate(id) {
+        var errorMessage = "";
+        if (id == "") {
+            errorMessage += "► Select genre";
+        }
+        return errorMessage;
+    }
+  });
+
+$(document).ready(function () {
+    $("#submit").click(function (e) {
+        var validate = Validate();
+        $("#message").html(validate);
+        if (validate.length == 0) {
+            CallAPI(1);
+        }
+    });
+  
+    function CallAPI(page) {
+        $.ajax({
+            url: "https://api.themoviedb.org/3/search/movie?language=en-US&query=" + $("#searchInput").val() + "&page=" + page + "&include_adult=false",
+            data: { "api_key": "65771d19b4a665e86c2dd45d55b5d10e" },
+            dataType: "json",
+            success: function (result, status, xhr) {
+                var resultHtml = $("<div class=\"resultDiv\">");
+                for (i = 0; i < result["results"].length; i++) {
+					
+					if (!!result["results"][i]["poster_path"]) {
+					 var image = "https://image.tmdb.org/t/p/w300/" + result["results"][i]["poster_path"];
+					 resultHtml.append("<div class=\"result\" resourceId=\"" + result["results"][i]["id"] + "\">" + "<img src=\"" + image + "\" /></div>");// + "<div class=\"name\"><a>" + result["results"][i]["name"] + "</a></div></div>")
+					}
+  
+                    
+                }
+  
+                resultHtml.append("</div>");
+                $("#message").html(resultHtml);
+  
+                //Paging(result["total_pages"]);
+            },
+            error: function (xhr, status, error) {
+                $("#message").html("Result: " + status + " " + error + " " + xhr.status + " " + xhr.statusText)
+            }
+        });
+    }
+  
+    function Validate() {
+        var errorMessage = "";
+        if ($("#searchInput").val() == "") {
+            errorMessage += "► Enter Search Text";
+        }
+        return errorMessage;
+    }
+  
+    function Paging(totalPage) {
+        var obj = $("#pagination").twbsPagination({
+            totalPages: totalPage,
+            visiblePages: 5,
+            onPageClick: function (event, page) {
+                CallAPI(page);
+            }
+        });
+    }
+  
+    $(document).ajaxStart(function () {
+        $(".imageDiv img").show();
+    });
+  
+    $(document).ajaxStop(function () {
+        $(".imageDiv img").hide();
+    });
+});
+
+$("#message").on("click", ".result", function () {
+    var resourceId = $(this).attr("resourceId");
+    $.ajax({
+        url: "https://api.themoviedb.org/3/movie/" + resourceId + "?language=en-US&append_to_response=videos",
+        data: {
+            api_key: "65771d19b4a665e86c2dd45d55b5d10e"
+        },
+        dataType: 'json',
+        success: function (result, status, xhr) {
+            $("#modalTitleH4").html(result["original_title"]);
+  
+            var image = result["poster_path"] == null ? "Image/no-image.png" : "https://image.tmdb.org/t/p/w300/" + result["poster_path"];
+			
+            var overview = result["overview"] == null ? "No information available" : result["overview"];
+			
+			var release_date = result["release_date"] == null ? "No release date available" : result["release_date"].substring(0,4);
+			//alert(result["genres"].length);
+			
+			var genres = result["genres"][0]["name"] == null ? "No genres available" : result["genres"][0]["name"];
+			for (var i=1;i<result["genres"].length; i++){
+				genres += ', ' + result["genres"][i]["name"];
+			}
+			var runtime = result["runtime"] == null ? "No runtime available" : result["runtime"];
+			
+			var hours = ~~(runtime / 60); 
+			var minutes = runtime % 60;
+			var vote_average = result["vote_average"]==null?"No user score":result["vote_average"]*10;
+			
+			var bar_color="";
+			
+			if(vote_average >= 70)
+				bar_color = 'green';
+			else if(vote_average >= 50 && vote_average < 70)
+				bar_color = '';
+			else
+				bar_color = 'orange';   
+			
+			
+			//alert(vote_average);
+  
+            //var resultHtml = "<div class=\"info\"><img class=\"poster\" src=\"" + image + "\"/><p>" + overview + "</p></div>";
+			var resultHtml = "<div id=\"info\"><div style=\"display:flex\"><div style=\"width:60%\">" + release_date + "&nbsp;" +"&bull;" + "&nbsp;" + genres + "&nbsp;" +"&bull;" + "&nbsp;";
+			if (hours >0) {
+				resultHtml += hours + "h" + "&nbsp;" + minutes + "min</div>";
+				} else {
+				resultHtml += minutes + "min</div>";
+				}
+			resultHtml += "<div style=\"width:40%;float:right\" class=\"clearfix\"><div style=\"float:right\" class=\"c100 p"+ vote_average +" small " + bar_color + " dark\"><span>"+ vote_average +"%</span><div class=\"slice\"><div class=\"bar\"></div><div class=\"fill\"></div></div></div><span style=\"float:right\">User</br>Score&nbsp;</span></div></div>";
+			resultHtml += "<p><b>Overview</b></p>";
+			resultHtml += "<p>" + overview + "</p></div>";
+			var trailer_key = result["videos"]["results"][0]["key"];
+			
+			resultHtml += "<div class=\"embed-responsive embed-responsive-16by9\"><iframe class=\"embed-responsive-item\" src=\"https://www.youtube.com/embed/"+ trailer_key +"\" allowfullscreen></iframe></div>";
+  
+            $("#modalBodyDiv").html(resultHtml)
+			$("#modalBodyDiv").css("background","center center fixed no-repeat");
+			$("#modalBodyDiv").css("background-size","cover");
+			$("#modalBodyDiv").css("background-image","linear-gradient(rgba(0, 0, 0, 0.6),rgba(0, 0, 0, 0.6)), url("+image+")");
+			$("#info").css("color","#fff");
+			$("#modalBodyDiv").css("opacity","0.8");
+			
+  
+            $("#myModal").modal("show");
+        },
+        error: function (xhr, status, error) {
+            $("#message").html("Result: " + status + " " + error + " " + xhr.status + " " + xhr.statusText)
+        }
+    });
+});
+</script>
+
+</body> 
+</html> 
